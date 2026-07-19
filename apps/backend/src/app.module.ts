@@ -12,6 +12,8 @@ import { PolicyModule } from './policy/policy.module';
 import { CryptoModule } from './crypto/crypto.module';
 import { ExecutionModule } from './execution/execution.module';
 import { BlockchainModule } from './blockchain/blockchain.module';
+import { AnalyticsModule } from './analytics/analytics.module';
+import { SearchModule } from './search/search.module';
 import { RequestIdMiddleware } from './core/middlewares/request-id.middleware';
 import { validateEnv } from './core/config/env.validation';
 
@@ -36,6 +38,8 @@ import { validateEnv } from './core/config/env.validation';
     CryptoModule,
     ExecutionModule,
     BlockchainModule,
+    AnalyticsModule,
+    SearchModule,
   ],
   controllers: [],
   providers: [],

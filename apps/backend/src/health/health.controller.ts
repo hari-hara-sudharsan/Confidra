@@ -1,17 +1,13 @@
-import { Controller, Get } from '@nestjs/common';
-import { PrismaService } from '../database/prisma.service';
+import { Controller, Get, UseGuards } from '@nestjs/common';
+import { HealthService } from './health.service';
+import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 
-@Controller('health')
+@Controller('api/v1/health')
 export class HealthController {
-  constructor(private readonly prisma: PrismaService) {}
+  constructor(private readonly healthService: HealthService) {}
 
   @Get()
-  async check() {
-    try {
-      await this.prisma.$queryRaw`SELECT 1`;
-      return { status: 'ok', database: 'connected' };
-    } catch (e) {
-      return { status: 'error', database: 'disconnected' };
-    }
+  async getHealth() {
+    return this.healthService.getSystemHealth();
   }
 }
