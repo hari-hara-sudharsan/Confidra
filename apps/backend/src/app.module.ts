@@ -17,6 +17,7 @@ import { SearchModule } from './search/search.module';
 import { TrustModule } from './trust/trust.module';
 import { ObservabilityModule } from './observability/observability.module';
 import { SecurityModule } from './security/security.module';
+import { AiModule } from './ai/ai.module';
 import { RequestIdMiddleware } from './core/middlewares/request-id.middleware';
 import { validateEnv } from './core/config/env.validation';
 
@@ -46,6 +47,7 @@ import { validateEnv } from './core/config/env.validation';
     TrustModule,
     ObservabilityModule,
     SecurityModule,
+    AiModule,
   ],
   controllers: [],
   providers: [],

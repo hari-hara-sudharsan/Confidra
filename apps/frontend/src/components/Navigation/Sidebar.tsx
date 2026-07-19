@@ -2,7 +2,11 @@
 
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { LayoutDashboard, Workflow, Activity, ShieldCheck, Settings, HeartPulse, Search, Database, ArrowRightLeft, Cpu, Sparkles } from 'lucide-react';
+import { 
+  Activity, Database, LayoutDashboard, Settings, 
+  Workflow, ArrowRightLeft, HeartPulse, Cpu, Sparkles,
+  ShieldCheck, Bot, Network, Target, PlayCircle
+} from 'lucide-react';
 
 export default function Sidebar() {
   const pathname = usePathname();
@@ -10,6 +14,10 @@ export default function Sidebar() {
   const navItems = [
     { name: 'Dashboard', href: '/dashboard', icon: LayoutDashboard },
     { name: 'Workflows', href: '/workflows', icon: Workflow },
+    { name: 'AI Studio', href: '/ai-studio', icon: Bot },
+    { name: 'Workflow Simulator', href: '/simulation', icon: PlayCircle },
+    { name: 'AI Quality Center', href: '/ai-quality', icon: Target },
+    { name: 'Prompt Governance', href: '/prompt-governance', icon: Network },
     { name: 'Executions', href: '/executions', icon: Activity },
     { name: 'Audit Center', href: '/audit', icon: ShieldCheck },
     { name: 'Trust Dashboard', href: '/trust-dashboard', icon: ShieldCheck },
