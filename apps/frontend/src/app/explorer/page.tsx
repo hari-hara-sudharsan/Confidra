@@ -1,110 +1,88 @@
 'use client';
 
-import { useState } from 'react';
-import { Search, ShieldCheck, Box, CheckCircle2, ChevronRight, Activity } from 'lucide-react';
-import { useRouter } from 'next/navigation';
+import { Database, Search, Cpu, Globe, Lock, Code } from 'lucide-react';
 
-export default function BlockchainExplorer() {
-  const router = useRouter();
-  const [searchQuery, setSearchQuery] = useState('');
-
-  const mockBlocks = [
-    { number: 125439, time: '2m ago', txCount: 14 },
-    { number: 125438, time: '5m ago', txCount: 8 },
-    { number: 125437, time: '8m ago', txCount: 22 },
-  ];
-
-  const mockTransactions = [
-    { hash: '0x3f5b...91a2', type: 'ExecutionVerified', from: '0x1A4...B92', to: 'ConfidentialExecutionRegistry', time: '2m ago', status: 'Success' },
-    { hash: '0x8f2d...5a9b', type: 'DecisionPublished', from: '0x1A4...B92', to: 'DecisionRegistry', time: '5m ago', status: 'Success' },
-    { hash: '0x2a1c...89ef', type: 'WorkflowCreated', from: '0x99B...C14', to: 'WorkflowRegistry', time: '12m ago', status: 'Success' },
-    { hash: '0x7b3d...22ac', type: 'ExecutionVerified', from: '0x1A4...B92', to: 'ConfidentialExecutionRegistry', time: '1h ago', status: 'Success' },
+export default function FlareExplorer() {
+  const contracts = [
+    { name: 'ConfidentialExecutionRegistry', address: '0x8F2A...3B1C', type: 'Core', calls: '1,492', status: 'Active' },
+    { name: 'VerificationRegistry', address: '0x4E9B...7A2D', type: 'Security', calls: '1,492', status: 'Active' },
+    { name: 'PolicyRegistry', address: '0x1C5D...9F4E', type: 'Core', calls: '34', status: 'Active' },
+    { name: 'OrganizationRegistry', address: '0x9A3B...2C1D', type: 'Identity', calls: '8', status: 'Active' },
   ];
 
   return (
-    <div className="min-h-screen bg-slate-950 text-white p-8">
-      <div className="max-w-6xl mx-auto">
-        <header className="flex justify-between items-center mb-12 border-b border-slate-800 pb-6">
-          <div className="flex items-center gap-3">
-            <Box className="w-8 h-8 text-blue-500" />
-            <div>
-              <h1 className="text-2xl font-bold">Confidra Explorer</h1>
-              <p className="text-sm text-slate-400">Powered by Flare Network</p>
-            </div>
-          </div>
-          <button onClick={() => router.push('/dashboard')} className="text-sm text-slate-400 hover:text-white transition-colors">
-            Back to Dashboard
-          </button>
-        </header>
+    <div className="p-8 max-w-7xl mx-auto space-y-8 animate-in fade-in h-full">
+      <header className="border-b border-slate-800 pb-6">
+        <h1 className="text-3xl font-bold text-white tracking-tight flex items-center gap-3">
+          <Database className="w-8 h-8 text-blue-500" />
+          Flare Explorer
+        </h1>
+        <p className="text-slate-400 mt-1">Dedicated block explorer for Confidra Smart Contracts on the Flare Network.</p>
+      </header>
 
-        {/* Search Bar */}
-        <div className="relative mb-12">
-          <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-500" />
-          <input 
-            type="text" 
-            placeholder="Search by Tx Hash / Block / Address / Execution Hash..." 
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-            className="w-full bg-slate-900 border border-slate-800 rounded-xl py-4 pl-12 pr-4 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/50 transition-shadow"
-          />
+      <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
+        <div className="bg-slate-900 border border-slate-800 rounded-2xl p-6 flex flex-col items-center justify-center text-center">
+          <Globe className="w-8 h-8 text-blue-500 mb-3" />
+          <h3 className="text-slate-400 text-sm font-semibold uppercase tracking-wider">Network</h3>
+          <p className="text-xl font-bold text-white mt-1">Coston2 Testnet</p>
         </div>
+        <div className="bg-slate-900 border border-slate-800 rounded-2xl p-6 flex flex-col items-center justify-center text-center">
+          <Code className="w-8 h-8 text-purple-500 mb-3" />
+          <h3 className="text-slate-400 text-sm font-semibold uppercase tracking-wider">Deployed Contracts</h3>
+          <p className="text-xl font-bold text-white mt-1">10</p>
+        </div>
+        <div className="bg-slate-900 border border-slate-800 rounded-2xl p-6 flex flex-col items-center justify-center text-center">
+          <Lock className="w-8 h-8 text-green-500 mb-3" />
+          <h3 className="text-slate-400 text-sm font-semibold uppercase tracking-wider">Total Attestations</h3>
+          <p className="text-xl font-bold text-white mt-1">1,492</p>
+        </div>
+        <div className="bg-slate-900 border border-slate-800 rounded-2xl p-6 flex flex-col items-center justify-center text-center">
+          <Cpu className="w-8 h-8 text-red-500 mb-3" />
+          <h3 className="text-slate-400 text-sm font-semibold uppercase tracking-wider">TEE Enclaves</h3>
+          <p className="text-xl font-bold text-white mt-1">1 Active</p>
+        </div>
+      </div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-          {/* Latest Blocks */}
-          <div className="lg:col-span-1 bg-slate-900 border border-slate-800 rounded-2xl overflow-hidden shadow-2xl">
-            <div className="p-6 border-b border-slate-800 flex justify-between items-center">
-              <h2 className="font-bold flex items-center gap-2"><Box className="w-4 h-4 text-blue-500"/> Latest Blocks</h2>
-            </div>
-            <div className="divide-y divide-slate-800/50">
-              {mockBlocks.map((block) => (
-                <div key={block.number} className="p-6 hover:bg-slate-800/50 transition-colors flex justify-between items-center">
-                  <div>
-                    <span className="text-blue-400 font-mono font-bold text-sm">Block {block.number}</span>
-                    <p className="text-xs text-slate-500 mt-1">{block.time}</p>
-                  </div>
-                  <div className="text-right">
-                    <span className="text-sm">{block.txCount} txns</span>
-                  </div>
-                </div>
-              ))}
-            </div>
-          </div>
-
-          {/* Latest Transactions */}
-          <div className="lg:col-span-2 bg-slate-900 border border-slate-800 rounded-2xl overflow-hidden shadow-2xl">
-            <div className="p-6 border-b border-slate-800 flex justify-between items-center">
-              <h2 className="font-bold flex items-center gap-2"><Activity className="w-4 h-4 text-green-500"/> Trust Layer Attestations</h2>
-            </div>
-            <table className="w-full text-left border-collapse">
-              <thead>
-                <tr className="bg-slate-950/50 border-b border-slate-800">
-                  <th className="p-4 font-semibold text-slate-400 text-xs uppercase tracking-wider">Tx Hash</th>
-                  <th className="p-4 font-semibold text-slate-400 text-xs uppercase tracking-wider">Event / Action</th>
-                  <th className="p-4 font-semibold text-slate-400 text-xs uppercase tracking-wider">To (Contract)</th>
-                  <th className="p-4 font-semibold text-slate-400 text-xs uppercase tracking-wider">Time</th>
-                </tr>
-              </thead>
-              <tbody>
-                {mockTransactions.map((tx) => (
-                  <tr key={tx.hash} className="border-b border-slate-800/50 hover:bg-slate-800/50 transition-colors">
-                    <td className="p-4 text-sm font-mono text-blue-400 flex items-center gap-2">
-                      <CheckCircle2 className="w-4 h-4 text-green-500" />
-                      {tx.hash}
-                    </td>
-                    <td className="p-4 text-sm font-semibold">
-                      <span className="bg-blue-500/10 text-blue-400 px-3 py-1 rounded-full text-xs">
-                        {tx.type}
-                      </span>
-                    </td>
-                    <td className="p-4 text-sm text-slate-300 font-mono">{tx.to}</td>
-                    <td className="p-4 text-sm text-slate-500">{tx.time}</td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
+      <div className="bg-slate-900 border border-slate-800 rounded-2xl shadow-xl overflow-hidden mt-8">
+        <div className="p-6 border-b border-slate-800 flex justify-between items-center">
+          <h2 className="text-lg font-bold text-white">Smart Contract Registry</h2>
+          <div className="relative">
+            <Search className="w-4 h-4 text-slate-500 absolute left-3 top-1/2 -translate-y-1/2" />
+            <input 
+              type="text" 
+              placeholder="Search contracts..." 
+              className="bg-slate-950 border border-slate-800 rounded-lg pl-9 pr-4 py-2 text-sm text-white focus:outline-none focus:border-blue-500 transition-colors"
+            />
           </div>
         </div>
-        
+        <table className="w-full text-left">
+          <thead className="bg-slate-950">
+            <tr>
+              <th className="px-6 py-4 text-xs font-semibold text-slate-500 uppercase tracking-wider">Contract Name</th>
+              <th className="px-6 py-4 text-xs font-semibold text-slate-500 uppercase tracking-wider">Address</th>
+              <th className="px-6 py-4 text-xs font-semibold text-slate-500 uppercase tracking-wider">Type</th>
+              <th className="px-6 py-4 text-xs font-semibold text-slate-500 uppercase tracking-wider">Total Calls</th>
+              <th className="px-6 py-4 text-xs font-semibold text-slate-500 uppercase tracking-wider text-right">Status</th>
+            </tr>
+          </thead>
+          <tbody className="divide-y divide-slate-800/50">
+            {contracts.map((contract, i) => (
+              <tr key={i} className="hover:bg-slate-800/30 transition-colors">
+                <td className="px-6 py-4 text-sm font-bold text-white">{contract.name}</td>
+                <td className="px-6 py-4 text-sm font-mono text-blue-400 cursor-pointer hover:text-blue-300">{contract.address}</td>
+                <td className="px-6 py-4">
+                  <span className="bg-slate-800 text-slate-300 px-2 py-1 rounded text-xs">{contract.type}</span>
+                </td>
+                <td className="px-6 py-4 text-sm font-mono text-slate-400">{contract.calls}</td>
+                <td className="px-6 py-4 text-right">
+                  <span className="inline-flex items-center gap-1.5 px-2.5 py-1 text-xs font-bold rounded-full bg-green-500/10 text-green-500">
+                    <div className="w-1.5 h-1.5 rounded-full bg-green-500"></div> {contract.status}
+                  </span>
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
       </div>
     </div>
   );

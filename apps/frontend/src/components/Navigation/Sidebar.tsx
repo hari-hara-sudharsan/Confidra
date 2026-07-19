@@ -2,7 +2,7 @@
 
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { LayoutDashboard, Workflow, Activity, ShieldCheck, Settings, HeartPulse, Search } from 'lucide-react';
+import { LayoutDashboard, Workflow, Activity, ShieldCheck, Settings, HeartPulse, Search, Database, ArrowRightLeft, Cpu, Sparkles } from 'lucide-react';
 
 export default function Sidebar() {
   const pathname = usePathname();
@@ -12,9 +12,13 @@ export default function Sidebar() {
     { name: 'Workflows', href: '/workflows', icon: Workflow },
     { name: 'Executions', href: '/executions', icon: Activity },
     { name: 'Audit Center', href: '/audit', icon: ShieldCheck },
-    { name: 'System Health', href: '/health', icon: HeartPulse },
+    { name: 'Flare Explorer', href: '/explorer', icon: Database },
+    { name: 'Transactions', href: '/transactions', icon: ArrowRightLeft },
+    { name: 'Network Health', href: '/network', icon: HeartPulse },
+    { name: 'Why Flare?', href: '/showcase', icon: Cpu },
+    { name: 'Architecture', href: '/architecture', icon: Cpu },
     { name: 'Settings', href: '/settings', icon: Settings },
-    { name: 'Demo Control', href: '/demo', icon: LayoutDashboard },
+    { name: 'Demo Control', href: '/demo', icon: Sparkles },
   ];
 
   return (

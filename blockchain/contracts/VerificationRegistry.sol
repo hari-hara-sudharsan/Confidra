@@ -2,17 +2,26 @@
 pragma solidity ^0.8.24;
 
 import "@openzeppelin/contracts/utils/cryptography/ECDSA.sol";
+import "@openzeppelin/contracts/access/Ownable.sol";
 import "./SystemConfig.sol";
 
-contract VerificationRegistry {
+contract VerificationRegistry is Ownable {
     using ECDSA for bytes32;
 
     SystemConfig public systemConfig;
 
-    event VerificationSucceeded(bytes32 indexed executionHash, address recoveredSigner);
-    event VerificationFailed(bytes32 indexed executionHash, address recoveredSigner, string reason);
+    event VerificationSucceeded(bytes32 indexed executionHash, address indexed recoveredSigner);
+    event VerificationFailed(bytes32 indexed executionHash, address indexed recoveredSigner, string reason);
+    
+    error InvalidSystemConfig();
 
-    constructor(address _systemConfigAddress) {
+    constructor(address _systemConfigAddress) Ownable(msg.sender) {
+        if (_systemConfigAddress == address(0)) revert InvalidSystemConfig();
+        systemConfig = SystemConfig(_systemConfigAddress);
+    }
+
+    function setSystemConfig(address _systemConfigAddress) external onlyOwner {
+        if (_systemConfigAddress == address(0)) revert InvalidSystemConfig();
         systemConfig = SystemConfig(_systemConfigAddress);
     }
 

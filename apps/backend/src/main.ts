@@ -1,5 +1,6 @@
 import { NestFactory } from '@nestjs/core';
 import { ValidationPipe, Logger } from '@nestjs/common';
+import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
 import { AppModule } from './app.module';
 
 async function bootstrap() {
@@ -31,8 +32,24 @@ async function bootstrap() {
     transform: true,
   }));
 
+  // 4. OpenAPI / Swagger Setup
+  const config = new DocumentBuilder()
+    .setTitle('Confidra Developer API')
+    .setDescription('Programmatic access to Confidential Decision Infrastructure powered by Flare Confidential Compute.')
+    .setVersion('1.0.0')
+    .addBearerAuth()
+    .addApiKey({ type: 'apiKey', name: 'x-api-key', in: 'header' }, 'api-key')
+    .build();
+  
+  const document = SwaggerModule.createDocument(app, config);
+  SwaggerModule.setup('api/docs', app, document, {
+    customSiteTitle: 'Confidra API Explorer',
+    swaggerOptions: { persistAuthorization: true },
+  });
+
   const port = process.env.PORT || 3001;
   await app.listen(port);
   Logger.log(`🚀 Confidra API Gateway running on port ${port}`, 'Bootstrap');
+  Logger.log(`📚 OpenAPI Explorer available at http://localhost:${port}/api/docs`, 'Bootstrap');
 }
 bootstrap();
