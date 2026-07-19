@@ -7,6 +7,8 @@ import ClientLayout from "../components/ClientLayout";
 
 const inter = Inter({ subsets: ["latin"] });
 
+import CommandPalette from "../components/CommandPalette/CommandPalette";
+
 export const metadata: Metadata = {
   title: "Confidra",
   description: "Confidential Decision Infrastructure",
@@ -22,6 +24,7 @@ export default function RootLayout({
       <body className={inter.className}>
         <Web3Provider>
           <AuthProvider>
+            <CommandPalette />
             <ClientLayout>{children}</ClientLayout>
           </AuthProvider>
         </Web3Provider>

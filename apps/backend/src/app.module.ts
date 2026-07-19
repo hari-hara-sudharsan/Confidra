@@ -15,6 +15,8 @@ import { BlockchainModule } from './blockchain/blockchain.module';
 import { AnalyticsModule } from './analytics/analytics.module';
 import { SearchModule } from './search/search.module';
 import { TrustModule } from './trust/trust.module';
+import { ObservabilityModule } from './observability/observability.module';
+import { SecurityModule } from './security/security.module';
 import { RequestIdMiddleware } from './core/middlewares/request-id.middleware';
 import { validateEnv } from './core/config/env.validation';
 
@@ -42,6 +44,8 @@ import { validateEnv } from './core/config/env.validation';
     AnalyticsModule,
     SearchModule,
     TrustModule,
+    ObservabilityModule,
+    SecurityModule,
   ],
   controllers: [],
   providers: [],
