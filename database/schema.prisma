@@ -204,6 +204,7 @@ model ExecutionLog {
   startedAt      DateTime  @default(now())
   completedAt    DateTime?
   executionHash  String?
+  txHash         String?
   resultPayload  Json?
   errorMessage   String?
 }

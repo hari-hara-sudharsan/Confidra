@@ -1,16 +1,25 @@
 {
-  "name": "blockchain",
+  "name": "confidra-blockchain",
   "version": "1.0.0",
-  "private": true,
+  "description": "On-Chain Trust Layer for Confidra using Flare Network",
+  "main": "index.js",
   "scripts": {
-    "compile": "hardhat compile",
-    "test": "hardhat test"
+    "build": "hardhat compile",
+    "test": "hardhat test",
+    "node": "hardhat node",
+    "deploy:local": "hardhat run scripts/deploy.ts --network localhost",
+    "deploy:coston": "hardhat run scripts/deploy.ts --network coston",
+    "deploy:coston2": "hardhat run scripts/deploy.ts --network coston2"
   },
   "dependencies": {
-    "@openzeppelin/contracts": "^5.0.0"
+    "@openzeppelin/contracts": "^5.0.1"
   },
   "devDependencies": {
     "@nomicfoundation/hardhat-toolbox": "^4.0.0",
-    "hardhat": "^2.20.0"
+    "hardhat": "^2.19.4",
+    "ethers": "^6.10.0",
+    "dotenv": "^16.3.2",
+    "typescript": "^5.3.3",
+    "ts-node": "^10.9.2"
   }
 }

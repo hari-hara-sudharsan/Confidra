@@ -11,6 +11,7 @@ import { WorkflowModule } from './workflow/workflow.module';
 import { PolicyModule } from './policy/policy.module';
 import { CryptoModule } from './crypto/crypto.module';
 import { ExecutionModule } from './execution/execution.module';
+import { BlockchainModule } from './blockchain/blockchain.module';
 import { RequestIdMiddleware } from './core/middlewares/request-id.middleware';
 import { validateEnv } from './core/config/env.validation';
 
@@ -34,6 +35,7 @@ import { validateEnv } from './core/config/env.validation';
     PolicyModule,
     CryptoModule,
     ExecutionModule,
+    BlockchainModule,
   ],
   controllers: [],
   providers: [],
