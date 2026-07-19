@@ -69,6 +69,16 @@ export default function CommandPalette() {
           <button onClick={() => navigate('/hub')} className="w-full text-left px-4 py-2 hover:bg-indigo-600/20 text-gray-300 hover:text-indigo-400 transition-colors">
             Organization Hub
           </button>
+          <div className="px-4 py-2 text-xs font-semibold text-rose-500 uppercase tracking-wider">Hackathon</div>
+          <button onClick={() => navigate('/demo')} className="w-full text-left px-4 py-2 hover:bg-rose-600/20 text-gray-300 hover:text-rose-400 transition-colors font-bold">
+            Interactive Demo
+          </button>
+          <button onClick={() => navigate('/judge')} className="w-full text-left px-4 py-2 hover:bg-rose-600/20 text-gray-300 hover:text-rose-400 transition-colors">
+            Judge Dashboard
+          </button>
+          <button onClick={() => navigate('/showcase')} className="w-full text-left px-4 py-2 hover:bg-rose-600/20 text-gray-300 hover:text-rose-400 transition-colors">
+            Why Flare? (Showcase)
+          </button>
         </div>
       </div>
     </div>

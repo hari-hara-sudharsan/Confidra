@@ -34,7 +34,7 @@ export default function LandingPage() {
         <div className="max-w-7xl mx-auto px-6 relative z-10 text-center">
           <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-slate-900 border border-slate-800 text-sm text-slate-300 mb-8">
             <span className="w-2 h-2 rounded-full bg-blue-500 animate-pulse"></span>
-            Powered by Flare Confidential Compute
+            Built for the Flare Summer Signal Hackathon
           </div>
           <h1 className="text-5xl md:text-7xl font-extrabold tracking-tight mb-8 leading-tight">
             Confidential Decision <br className="hidden md:block"/>
@@ -43,14 +43,14 @@ export default function LandingPage() {
             </span>
           </h1>
           <p className="text-lg md:text-xl text-slate-400 max-w-2xl mx-auto mb-12 leading-relaxed">
-            Execute complex AI workflows on sensitive enterprise data. Guaranteed privacy inside hardware enclaves, with cryptographic proof anchored to the Flare blockchain.
+            Confidra uses Flare Confidential Compute to securely evaluate sensitive data using AI, without ever exposing PII to node operators or cloud providers.
           </p>
           <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
-            <Link href="/dashboard" className="w-full sm:w-auto bg-blue-600 hover:bg-blue-500 text-white px-8 py-4 rounded-full text-lg font-bold transition-all shadow-lg shadow-blue-500/25 flex items-center justify-center gap-2">
-              Start Building <ArrowRight className="w-5 h-5" />
+            <Link href="/demo" className="w-full sm:w-auto bg-blue-600 hover:bg-blue-500 text-white px-8 py-4 rounded-full text-lg font-bold transition-all shadow-lg shadow-blue-500/25 flex items-center justify-center gap-2">
+              <PlayCircle className="w-5 h-5" /> Launch Interactive Demo
             </Link>
-            <Link href="/demo" className="w-full sm:w-auto bg-slate-900 border border-slate-800 hover:bg-slate-800 text-white px-8 py-4 rounded-full text-lg font-bold transition-all flex items-center justify-center gap-2">
-              View Live Demo
+            <Link href="/judge" className="w-full sm:w-auto bg-slate-900 border border-slate-800 hover:bg-slate-800 text-white px-8 py-4 rounded-full text-lg font-bold transition-all flex items-center justify-center gap-2">
+              Judge Dashboard
             </Link>
           </div>
         </div>

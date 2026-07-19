@@ -1,104 +1,100 @@
 'use client';
-
+import { PlayCircle, GraduationCap, Building2, Briefcase, ChevronRight, CheckCircle2 } from 'lucide-react';
 import { useState } from 'react';
-import { Presentation, DatabaseZap, Users, FileText, CheckCircle2, RotateCcw } from 'lucide-react';
-import { useRouter } from 'next/navigation';
+
+const scenarios = [
+  {
+    id: 'scholarship',
+    title: 'University Scholarship Review',
+    icon: GraduationCap,
+    description: 'Evaluate student financial and academic records confidentially.',
+    steps: ['Encrypt PII locally', 'AI Evaluation in TEE', 'Anchor decision to Flare', 'Issue Trust Certificate']
+  },
+  {
+    id: 'procurement',
+    title: 'Enterprise Vendor Selection',
+    icon: Building2,
+    description: 'Score vendor bids blindly to prevent bias and ensure compliance.',
+    steps: ['Mask Vendor Identity', 'Score Technical Merits', 'Verify Compliance', 'Generate Audit Trail']
+  },
+  {
+    id: 'hiring',
+    title: 'Executive Hiring',
+    icon: Briefcase,
+    description: 'Process background checks and executive scoring securely.',
+    steps: ['Encrypt Resume', 'AI Risk Assessment', 'Human-in-the-loop Review', 'Final TEE Verification']
+  }
+];
 
 export default function DemoControlCenter() {
-  const router = useRouter();
-  const [isPresentationMode, setIsPresentationMode] = useState(false);
-  const [loadingDataset, setLoadingDataset] = useState<string | null>(null);
+  const [activeSimulation, setActiveSimulation] = useState<string | null>(null);
 
-  const togglePresentationMode = () => {
-    const newState = !isPresentationMode;
-    setIsPresentationMode(newState);
-    if (typeof window !== 'undefined') {
-      localStorage.setItem('presentationMode', newState ? 'true' : 'false');
-    }
-  };
-
-  const injectDataset = (datasetName: string) => {
-    setLoadingDataset(datasetName);
-    // Simulate injection delay
+  const runSimulation = (id: string) => {
+    setActiveSimulation(id);
     setTimeout(() => {
-      setLoadingDataset(null);
-      alert(`✅ Mock ${datasetName} dataset injected successfully. Navigate to Dashboards to view.`);
-      router.push('/dashboard');
-    }, 1500);
+      // Simulate pushing to an execution view
+      window.location.href = '/executions/demo-123';
+    }, 2000);
   };
 
   return (
-    <div className="p-8 max-w-7xl mx-auto space-y-8 animate-in fade-in h-full">
-      <header className="border-b border-slate-800 pb-6 flex justify-between items-end">
-        <div>
-          <h1 className="text-3xl font-bold text-white tracking-tight flex items-center gap-3">
-            <Presentation className="w-8 h-8 text-blue-500" />
-            Demo Control Center
-          </h1>
-          <p className="text-slate-400 mt-1">Configure presentation settings and inject mock datasets for live judging.</p>
-        </div>
-        <button
-          onClick={togglePresentationMode}
-          className={`px-6 py-3 rounded-full text-sm font-bold flex items-center gap-2 transition-all shadow-lg ${
-            isPresentationMode ? 'bg-red-500 hover:bg-red-600 text-white shadow-red-500/20' : 'bg-blue-600 hover:bg-blue-500 text-white shadow-blue-500/20'
-          }`}
-        >
-          {isPresentationMode ? 'Disable Presentation Mode' : 'Enable Presentation Mode'}
-        </button>
-      </header>
+    <div className="p-8 max-w-5xl mx-auto space-y-8">
+      <div className="text-center mb-12">
+        <h1 className="text-4xl font-extrabold tracking-tight text-white mb-4">
+          Demo Control Center
+        </h1>
+        <p className="text-lg text-gray-400 max-w-2xl mx-auto">
+          Experience how Confidra transforms sensitive decision-making. Select a curated scenario below to simulate an end-to-end confidential execution powered by the Flare Network.
+        </p>
+      </div>
 
-      {isPresentationMode && (
-        <div className="bg-blue-500/10 border border-blue-500/30 p-4 rounded-xl text-blue-400 text-sm flex items-center gap-2 mb-8">
-          <CheckCircle2 className="w-5 h-5" />
-          Presentation mode is active. Extraneous UI is hidden, and metrics are amplified for visibility on projectors.
-        </div>
-      )}
-
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        
-        <div className="bg-slate-900 border border-slate-800 rounded-2xl p-6 shadow-xl hover:border-slate-700 transition-colors">
-          <div className="w-12 h-12 bg-purple-500/10 rounded-xl flex items-center justify-center mb-4">
-            <Users className="w-6 h-6 text-purple-500" />
-          </div>
-          <h2 className="text-xl font-bold text-white mb-2">Hiring & KYC Dataset</h2>
-          <p className="text-slate-400 text-sm mb-6">Injects 142 historical executions demonstrating background checks, identity verification, and PII masking.</p>
-          <button 
-            onClick={() => injectDataset('Hiring')}
-            disabled={loadingDataset !== null}
-            className="w-full bg-slate-950 border border-slate-800 hover:bg-slate-800 text-white px-4 py-2 rounded-lg text-sm font-semibold transition-colors flex justify-center items-center gap-2"
-          >
-            {loadingDataset === 'Hiring' ? <RotateCcw className="w-4 h-4 animate-spin" /> : <DatabaseZap className="w-4 h-4" />}
-            {loadingDataset === 'Hiring' ? 'Injecting...' : 'Inject Dataset'}
-          </button>
-        </div>
-
-        <div className="bg-slate-900 border border-slate-800 rounded-2xl p-6 shadow-xl hover:border-slate-700 transition-colors">
-          <div className="w-12 h-12 bg-green-500/10 rounded-xl flex items-center justify-center mb-4">
-            <FileText className="w-6 h-6 text-green-500" />
-          </div>
-          <h2 className="text-xl font-bold text-white mb-2">Loan Approval Dataset</h2>
-          <p className="text-slate-400 text-sm mb-6">Injects 89 historical executions highlighting credit risk analysis and financial document parsing.</p>
-          <button 
-            onClick={() => injectDataset('Loan')}
-            disabled={loadingDataset !== null}
-            className="w-full bg-slate-950 border border-slate-800 hover:bg-slate-800 text-white px-4 py-2 rounded-lg text-sm font-semibold transition-colors flex justify-center items-center gap-2"
-          >
-            {loadingDataset === 'Loan' ? <RotateCcw className="w-4 h-4 animate-spin" /> : <DatabaseZap className="w-4 h-4" />}
-            {loadingDataset === 'Loan' ? 'Injecting...' : 'Inject Dataset'}
-          </button>
-        </div>
-
-        <div className="bg-slate-900 border border-slate-800 rounded-2xl p-6 shadow-xl hover:border-slate-700 transition-colors opacity-50 cursor-not-allowed">
-          <div className="w-12 h-12 bg-slate-500/10 rounded-xl flex items-center justify-center mb-4">
-            <DatabaseZap className="w-6 h-6 text-slate-500" />
-          </div>
-          <h2 className="text-xl font-bold text-slate-300 mb-2">DAO Governance Dataset</h2>
-          <p className="text-slate-500 text-sm mb-6">Injects voting and proposal evaluation data. (Coming soon in v2).</p>
-          <button disabled className="w-full bg-slate-950 border border-slate-800 text-slate-600 px-4 py-2 rounded-lg text-sm font-semibold flex justify-center items-center gap-2">
-            Locked
-          </button>
-        </div>
-
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+        {scenarios.map((scenario) => {
+          const Icon = scenario.icon;
+          return (
+            <div key={scenario.id} className="bg-gray-900 border border-gray-800 hover:border-indigo-500 transition-colors rounded-2xl p-6 shadow-xl flex flex-col group relative overflow-hidden">
+              <div className="absolute top-0 right-0 p-4 opacity-10 group-hover:opacity-20 transition-opacity">
+                <Icon className="w-24 h-24 text-indigo-500" />
+              </div>
+              
+              <div className="relative z-10">
+                <div className="bg-indigo-500/10 w-12 h-12 rounded-xl flex items-center justify-center mb-6">
+                  <Icon className="w-6 h-6 text-indigo-400" />
+                </div>
+                
+                <h3 className="text-xl font-bold text-white mb-2">{scenario.title}</h3>
+                <p className="text-gray-400 text-sm mb-6 h-10">{scenario.description}</p>
+                
+                <ul className="space-y-2 mb-8">
+                  {scenario.steps.map((step, idx) => (
+                    <li key={idx} className="flex items-center text-xs text-gray-500 font-medium">
+                      <CheckCircle2 className="w-4 h-4 mr-2 text-emerald-500/70" />
+                      {step}
+                    </li>
+                  ))}
+                </ul>
+              </div>
+              
+              <div className="mt-auto relative z-10">
+                <button 
+                  onClick={() => runSimulation(scenario.id)}
+                  disabled={activeSimulation !== null}
+                  className={`w-full py-3 rounded-xl font-bold flex items-center justify-center transition-all ${
+                    activeSimulation === scenario.id 
+                      ? 'bg-indigo-600 text-white animate-pulse' 
+                      : 'bg-white text-gray-900 hover:bg-gray-100'
+                  }`}
+                >
+                  {activeSimulation === scenario.id ? (
+                    'Initializing TEE Enclave...'
+                  ) : (
+                    <>Run Scenario <ChevronRight className="w-4 h-4 ml-1" /></>
+                  )}
+                </button>
+              </div>
+            </div>
+          );
+        })}
       </div>
     </div>
   );
