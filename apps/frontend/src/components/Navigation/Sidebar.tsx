@@ -12,6 +12,8 @@ export default function Sidebar() {
     { name: 'Workflows', href: '/workflows', icon: Workflow },
     { name: 'Executions', href: '/executions', icon: Activity },
     { name: 'Audit Center', href: '/audit', icon: ShieldCheck },
+    { name: 'Trust Dashboard', href: '/trust-dashboard', icon: ShieldCheck },
+    { name: 'Trust Explorer', href: '/trust-explorer', icon: ShieldCheck },
     { name: 'Flare Explorer', href: '/explorer', icon: Database },
     { name: 'Transactions', href: '/transactions', icon: ArrowRightLeft },
     { name: 'Network Health', href: '/network', icon: HeartPulse },
