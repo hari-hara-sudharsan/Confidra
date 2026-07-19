@@ -18,6 +18,7 @@ import { TrustModule } from './trust/trust.module';
 import { ObservabilityModule } from './observability/observability.module';
 import { SecurityModule } from './security/security.module';
 import { AiModule } from './ai/ai.module';
+import { EcosystemModule } from './ecosystem/ecosystem.module';
 import { RequestIdMiddleware } from './core/middlewares/request-id.middleware';
 import { validateEnv } from './core/config/env.validation';
 
@@ -48,6 +49,7 @@ import { validateEnv } from './core/config/env.validation';
     ObservabilityModule,
     SecurityModule,
     AiModule,
+    EcosystemModule,
   ],
   controllers: [],
   providers: [],

@@ -5,7 +5,8 @@ import { usePathname } from 'next/navigation';
 import { 
   Activity, Database, LayoutDashboard, Settings, 
   Workflow, ArrowRightLeft, HeartPulse, Cpu, Sparkles,
-  ShieldCheck, Bot, Network, Target, PlayCircle
+  ShieldCheck, Bot, Network, Target, PlayCircle,
+  ShoppingBag, Blocks, Building2
 } from 'lucide-react';
 
 export default function Sidebar() {
@@ -14,6 +15,9 @@ export default function Sidebar() {
   const navItems = [
     { name: 'Dashboard', href: '/dashboard', icon: LayoutDashboard },
     { name: 'Workflows', href: '/workflows', icon: Workflow },
+    { name: 'Marketplace', href: '/marketplace', icon: ShoppingBag },
+    { name: 'Plugins & Connectors', href: '/plugins', icon: Blocks },
+    { name: 'Organization Hub', href: '/hub', icon: Building2 },
     { name: 'AI Studio', href: '/ai-studio', icon: Bot },
     { name: 'Workflow Simulator', href: '/simulation', icon: PlayCircle },
     { name: 'AI Quality Center', href: '/ai-quality', icon: Target },
