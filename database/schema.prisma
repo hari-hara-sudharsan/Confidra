@@ -1,0 +1,430 @@
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+// ----------------------------------------------------------------------------
+// ENUMS
+// ----------------------------------------------------------------------------
+
+enum SystemRole {
+  SUPER_ADMIN
+  ORG_OWNER
+  ORG_ADMIN
+  WORKFLOW_MANAGER
+  AUDITOR
+  APPLICANT
+}
+
+enum ApplicationStatus {
+  DRAFT
+  PENDING
+  PROCESSING
+  COMPLETED
+  FAILED
+  REJECTED
+  APPROVED
+}
+
+enum ActionType {
+  CREATE
+  UPDATE
+  DELETE
+  EXECUTE
+  VIEW
+  APPROVE
+  REJECT
+}
+
+enum WebhookStatus {
+  ACTIVE
+  INACTIVE
+  FAILED
+}
+
+// ----------------------------------------------------------------------------
+// CORE ENTITIES
+// ----------------------------------------------------------------------------
+
+model User {
+  id            String    @id @default(uuid())
+  walletAddress String    @unique
+  email         String?   @unique
+  metadata      Json?
+  isDeleted     Boolean   @default(false)
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+
+  memberships   Member[]
+  sessions      Session[]
+  applications  Application[]
+  activities    Activity[]
+  notifications Notification[]
+}
+
+model Organization {
+  id            String    @id @default(uuid())
+  name          String
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+  isDeleted     Boolean   @default(false)
+
+  members       Member[]
+  workspaces    Workspace[]
+  apiKeys       ApiKey[]
+  webhooks      Webhook[]
+  policies      Policy[]
+  auditLogs     AuditLog[]
+  settings      OrganizationSettings?
+  analytics     AnalyticsEvent[]
+}
+
+model Workspace {
+  id             String    @id @default(uuid())
+  organizationId String
+  name           String
+  description    String?
+  isDeleted      Boolean   @default(false)
+  createdAt      DateTime  @default(now())
+  updatedAt      DateTime  @updatedAt
+
+  organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  workflows      Workflow[]
+  members        Member[]
+
+  @@index([organizationId])
+}
+
+model Member {
+  id             String    @id @default(uuid())
+  userId         String
+  organizationId String
+  workspaceId    String?
+  roleId         String
+  createdAt      DateTime  @default(now())
+  updatedAt      DateTime  @updatedAt
+
+  user           User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+  organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  workspace      Workspace?   @relation(fields: [workspaceId], references: [id], onDelete: SetNull)
+  role           Role         @relation(fields: [roleId], references: [id])
+
+  @@unique([userId, organizationId, workspaceId])
+  @@index([userId])
+  @@index([organizationId])
+}
+
+// ----------------------------------------------------------------------------
+// RBAC
+// ----------------------------------------------------------------------------
+
+model Role {
+  id          String       @id @default(uuid())
+  name        String
+  systemRole  SystemRole
+  permissions Permission[]
+  createdAt   DateTime     @default(now())
+  updatedAt   DateTime     @updatedAt
+
+  members     Member[]
+}
+
+model Permission {
+  id          String   @id @default(uuid())
+  roleId      String
+  action      String   // e.g., "workflow:read"
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  role        Role     @relation(fields: [roleId], references: [id], onDelete: Cascade)
+
+  @@index([roleId])
+}
+
+// ----------------------------------------------------------------------------
+// WORKFLOWS & TEMPLATES
+// ----------------------------------------------------------------------------
+
+model WorkflowTemplate {
+  id          String     @id @default(uuid())
+  name        String
+  description String?
+  configSchema Json
+  createdAt   DateTime   @default(now())
+  updatedAt   DateTime   @updatedAt
+  workflows   Workflow[]
+}
+
+model Workflow {
+  id                 String    @id @default(uuid())
+  workspaceId        String
+  templateId         String?
+  name               String
+  status             String    @default("DRAFT")
+  schemaConfig       Json
+  aiPromptHash       String?
+  contractAddress    String?
+  isDeleted          Boolean   @default(false)
+  createdAt          DateTime  @default(now())
+  updatedAt          DateTime  @updatedAt
+
+  workspace          Workspace         @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+  template           WorkflowTemplate? @relation(fields: [templateId], references: [id], onDelete: SetNull)
+  stages             WorkflowStage[]
+  applications       Application[]
+  policies           Policy[]
+  executionLogs      ExecutionLog[]
+
+  @@index([workspaceId])
+}
+
+model WorkflowStage {
+  id          String    @id @default(uuid())
+  workflowId  String
+  name        String
+  order       Int
+  config      Json
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+
+  workflow    Workflow  @relation(fields: [workflowId], references: [id], onDelete: Cascade)
+
+  @@index([workflowId])
+}
+
+model ExecutionLog {
+  id             String    @id @default(uuid())
+  workflowId     String
+  workflow       Workflow  @relation(fields: [workflowId], references: [id])
+  status         String
+  startedAt      DateTime  @default(now())
+  completedAt    DateTime?
+  executionHash  String?
+  resultPayload  Json?
+  errorMessage   String?
+}
+
+// ----------------------------------------------------------------------------
+// APPLICATIONS & DECISIONS
+// ----------------------------------------------------------------------------
+
+model Application {
+  id                   String            @id @default(uuid())
+  workflowId           String
+  userId               String
+  applicantHash        String            @unique
+  encryptedPayloadUri  String?
+  status               ApplicationStatus @default(PENDING)
+  createdAt            DateTime          @default(now())
+  updatedAt            DateTime          @updatedAt
+  isDeleted            Boolean           @default(false)
+
+  workflow             Workflow          @relation(fields: [workflowId], references: [id], onDelete: Cascade)
+  user                 User              @relation(fields: [userId], references: [id])
+  documents            ApplicationDocument[]
+  decisions            Decision[]
+
+  @@index([workflowId])
+  @@index([userId])
+}
+
+model ApplicationDocument {
+  id             String      @id @default(uuid())
+  applicationId  String
+  documentType   String
+  encryptedUri   String
+  uploadedAt     DateTime    @default(now())
+
+  application    Application @relation(fields: [applicationId], references: [id], onDelete: Cascade)
+
+  @@index([applicationId])
+}
+
+model Decision {
+  id              String      @id @default(uuid())
+  applicationId   String
+  txHash          String?     @unique
+  decisionHash    String
+  outcome         String
+  executedAt      DateTime?
+  createdAt       DateTime    @default(now())
+
+  application     Application @relation(fields: [applicationId], references: [id], onDelete: Cascade)
+  explanations    DecisionExplanation[]
+  riskScores      RiskScore[]
+
+  @@index([applicationId])
+}
+
+model DecisionExplanation {
+  id              String   @id @default(uuid())
+  decisionId      String
+  publicRationale String
+  createdAt       DateTime @default(now())
+
+  decision        Decision @relation(fields: [decisionId], references: [id], onDelete: Cascade)
+
+  @@index([decisionId])
+}
+
+model RiskScore {
+  id          String   @id @default(uuid())
+  decisionId  String
+  score       Float
+  category    String
+  createdAt   DateTime @default(now())
+
+  decision    Decision @relation(fields: [decisionId], references: [id], onDelete: Cascade)
+
+  @@index([decisionId])
+}
+
+// ----------------------------------------------------------------------------
+// SECURITY, POLICIES & SETTINGS
+// ----------------------------------------------------------------------------
+
+model Policy {
+  id             String       @id @default(uuid())
+  organizationId String
+  workflowId     String?
+  name           String
+  description    String?
+  createdAt      DateTime     @default(now())
+  updatedAt      DateTime     @updatedAt
+
+  organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  workflow       Workflow?    @relation(fields: [workflowId], references: [id], onDelete: Cascade)
+  rules          Rule[]
+
+  @@index([organizationId])
+  @@index([workflowId])
+}
+
+model Rule {
+  id          String   @id @default(uuid())
+  policyId    String
+  condition   Json
+  action      String
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  policy      Policy   @relation(fields: [policyId], references: [id], onDelete: Cascade)
+
+  @@index([policyId])
+}
+
+model ApiKey {
+  id             String       @id @default(uuid())
+  organizationId String
+  name           String
+  keyHash        String       @unique
+  lastUsedAt     DateTime?
+  createdAt      DateTime     @default(now())
+
+  organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+
+  @@index([organizationId])
+}
+
+model OrganizationSettings {
+  id             String       @id @default(uuid())
+  organizationId String       @unique
+  brandingConfig Json?
+  billingTier    String       @default("FREE")
+  createdAt      DateTime     @default(now())
+  updatedAt      DateTime     @updatedAt
+
+  organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+}
+
+// ----------------------------------------------------------------------------
+// LOGS & SYSTEM
+// ----------------------------------------------------------------------------
+
+model AuditLog {
+  id             String       @id @default(uuid())
+  organizationId String
+  actorId        String?
+  action         ActionType
+  resource       String
+  resourceId     String?
+  metadata       Json?
+  ipAddress      String?
+  userAgent      String?
+  createdAt      DateTime     @default(now())
+
+  organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+
+  @@index([organizationId])
+  @@index([actorId])
+}
+
+model Activity {
+  id        String   @id @default(uuid())
+  userId    String
+  action    String
+  metadata  Json?
+  createdAt DateTime @default(now())
+
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+}
+
+model Session {
+  id        String   @id @default(uuid())
+  userId    String
+  tokenHash String   @unique
+  expiresAt DateTime
+  createdAt DateTime @default(now())
+
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+}
+
+model Notification {
+  id        String   @id @default(uuid())
+  userId    String
+  title     String
+  message   String
+  isRead    Boolean  @default(false)
+  createdAt DateTime @default(now())
+
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+}
+
+model Webhook {
+  id             String        @id @default(uuid())
+  organizationId String
+  url            String
+  secret         String?
+  events         String[]
+  status         WebhookStatus @default(ACTIVE)
+  createdAt      DateTime      @default(now())
+  updatedAt      DateTime      @updatedAt
+
+  organization   Organization  @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+
+  @@index([organizationId])
+}
+
+model AnalyticsEvent {
+  id             String       @id @default(uuid())
+  organizationId String
+  eventName      String
+  eventValue     Float?
+  metadata       Json?
+  timestamp      DateTime     @default(now())
+
+  organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+
+  @@index([organizationId])
+  @@index([eventName])
+}
