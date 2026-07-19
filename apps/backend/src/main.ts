@@ -1,45 +1,38 @@
 import { NestFactory } from '@nestjs/core';
-import { ValidationPipe } from '@nestjs/common';
-import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
-import helmet from 'helmet';
-import compression from 'compression';
-import cookieParser from 'cookie-parser';
+import { ValidationPipe, Logger } from '@nestjs/common';
 import { AppModule } from './app.module';
-import { GlobalExceptionFilter } from './core/filters/http-exception.filter';
-import { LoggingInterceptor } from './core/interceptors/logging.interceptor';
 
 async function bootstrap() {
-  const app = await NestFactory.create(AppModule, { bufferLogs: true });
-
-  // Security & Optimization
-  app.use(helmet());
-  app.use(compression());
-  app.use(cookieParser());
+  const app = await NestFactory.create(AppModule);
+  
+  // 1. Configure CORS
   app.enableCors({
-    origin: '*', // To be restricted in production
-    methods: 'GET,HEAD,PUT,PATCH,POST,DELETE,OPTIONS',
+    origin: process.env.FRONTEND_URL || 'http://localhost:3000',
+    methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
     credentials: true,
   });
 
-  // Global prefixes and pipes
-  app.setGlobalPrefix('api/v1');
-  app.useGlobalPipes(new ValidationPipe({ whitelist: true, transform: true }));
-  app.useGlobalFilters(new GlobalExceptionFilter());
-  app.useGlobalInterceptors(new LoggingInterceptor());
+  // 2. Security Headers (Manual Helmet alternative)
+  app.use((req, res, next) => {
+    res.setHeader('X-DNS-Prefetch-Control', 'off');
+    res.setHeader('X-Frame-Options', 'SAMEORIGIN');
+    res.setHeader('Strict-Transport-Security', 'max-age=15552000; includeSubDomains');
+    res.setHeader('X-Download-Options', 'noopen');
+    res.setHeader('X-Content-Type-Options', 'nosniff');
+    res.setHeader('X-XSS-Protection', '1; mode=block');
+    res.setHeader('Referrer-Policy', 'no-referrer');
+    next();
+  });
 
-  // Swagger OpenAPI
-  const config = new DocumentBuilder()
-    .setTitle('Confidra API')
-    .setDescription('The Confidra backend infrastructure API.')
-    .setVersion('1.0')
-    .addBearerAuth()
-    .build();
-  const document = SwaggerModule.createDocument(app, config);
-  SwaggerModule.setup('api/docs', app, document);
+  // 3. Global Validation Pipe (Input Sanitization)
+  app.useGlobalPipes(new ValidationPipe({
+    whitelist: true,
+    forbidNonWhitelisted: true,
+    transform: true,
+  }));
 
   const port = process.env.PORT || 3001;
   await app.listen(port);
-  console.log(`🚀 Application is running on: http://localhost:${port}/api/v1`);
-  console.log(`📚 Swagger documentation at: http://localhost:${port}/api/docs`);
+  Logger.log(`🚀 Confidra API Gateway running on port ${port}`, 'Bootstrap');
 }
 bootstrap();

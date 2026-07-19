@@ -1,0 +1,61 @@
+version: '3.8'
+
+services:
+  database:
+    image: postgres:15-alpine
+    environment:
+      POSTGRES_USER: confidra
+      POSTGRES_PASSWORD: confidra_password
+      POSTGRES_DB: confidra_db
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U confidra"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  tee-worker:
+    build:
+      context: ./apps/tee-worker
+    ports:
+      - "8000:8000"
+    environment:
+      - OPENAI_API_KEY=${OPENAI_API_KEY:-mock-key}
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/docs"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+
+  backend:
+    build:
+      context: .
+      dockerfile: ./apps/backend/Dockerfile
+    ports:
+      - "3001:3001"
+    environment:
+      - DATABASE_URL=postgresql://confidra:confidra_password@database:5432/confidra_db?schema=public
+      - JWT_SECRET=${JWT_SECRET:-super-secret-jwt-key}
+      - TEE_URL=http://tee-worker:8000
+    depends_on:
+      database:
+        condition: service_healthy
+      tee-worker:
+        condition: service_started
+
+  frontend:
+    build:
+      context: .
+      dockerfile: ./apps/frontend/Dockerfile
+    ports:
+      - "3000:3000"
+    environment:
+      - NEXT_PUBLIC_API_URL=http://localhost:3001
+    depends_on:
+      - backend
+
+volumes:
+  postgres_data:

@@ -14,6 +14,7 @@ export default function Sidebar() {
     { name: 'Audit Center', href: '/audit', icon: ShieldCheck },
     { name: 'System Health', href: '/health', icon: HeartPulse },
     { name: 'Settings', href: '/settings', icon: Settings },
+    { name: 'Demo Control', href: '/demo', icon: LayoutDashboard },
   ];
 
   return (
